@@ -1,5 +1,6 @@
 import mesa
-from mesa.examples.advanced.epstein_civil_violence.agents import (
+import networkx as nx
+from agents import (
     Citizen,
     CitizenState,
     Cop,
@@ -48,10 +49,12 @@ class EpsteinCivilViolence(mesa.Model):
         movement=True,
         max_iters=1000,
         seed=None,
+        networked=True
     ):
         super().__init__(seed=seed)
         self.movement = movement
         self.max_iters = max_iters
+        self.networked = networked # making it a model var so citizens only conditionally update
 
         self.grid = mesa.discrete_space.OrthogonalVonNeumannGrid(
             (width, height), capacity=1, torus=True, random=self.random
@@ -91,6 +94,23 @@ class EpsteinCivilViolence(mesa.Model):
                 )
                 citizen.move_to(cell)
 
+        
+        # NETWORK -----------------------
+        if networked:
+            citizens = [agent for agent in self.agents if isinstance(agent, Citizen)]
+            num_citizens = len(citizens)
+
+            nx_graph = nx.barabasi_albert_graph(num_citizens, 10, seed=seed)
+
+            self.citizen_network = mesa.space.NetworkGrid(g=nx_graph)
+        
+            for citizen, node in zip(citizens, self.citizen_network.G.nodes()):
+                self.citizen_network.place_agent(citizen, node)
+                
+            for citizen, node in zip(citizens, self.citizen_network.G.nodes()):
+                citizen.set_network_neighbors(node)
+        # -------------------------------
+        
         self.running = True
         self._update_counts()
         self.datacollector.collect(self)

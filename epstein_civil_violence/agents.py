@@ -17,6 +17,7 @@ class EpsteinAgent(mesa.discrete_space.CellAgent):
         """
         self.neighborhood = self.cell.get_neighborhood(radius=self.vision)
         self.neighbors = self.neighborhood.agents
+        
         self.empty_neighbors = [c for c in self.neighborhood if c.is_empty]
 
     def move(self):
@@ -81,7 +82,13 @@ class Citizen(EpsteinAgent):
         self.neighborhood = []
         self.neighbors = []
         self.empty_neighbors = []
-
+        
+        
+    def set_network_neighbors(self, node):
+        # NETWORK --------
+        self.network_neighbors = self.model.citizen_network.get_neighbors(node)
+        # ----------------
+        
     def step(self):
         """
         Decide whether to activate, then move if applicable.
@@ -112,7 +119,20 @@ class Citizen(EpsteinAgent):
                 cops_in_vision += 1
             elif neighbor.state == CitizenState.ACTIVE:
                 actives_in_vision += 1
-
+                
+        actives_before = actives_in_vision
+        
+        # NETWORK ------------------
+        if self.model.networked:
+            for neighbor in self.network_neighbors:
+                if isinstance(neighbor, Citizen):
+                    if neighbor.state == CitizenState.ACTIVE:
+                        actives_in_vision += 1
+        # ---------------------------
+        actives_after = actives_in_vision
+        
+        #print('Diff by Network:', actives_after-actives_before)
+        
         # there is a body of literature on this equation
         # the round is not in the pnas paper but without it, its impossible to replicate
         # the dynamics shown there.
