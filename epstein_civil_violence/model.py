@@ -38,11 +38,11 @@ class EpsteinCivilViolence(mesa.Model):
         width=40,
         height=40,
         citizen_density=0.7,
-        cop_density=0.074,
+        cop_density=0.04,
         citizen_vision=7,
         cop_vision=7,
-        legitimacy=0.8,
-        max_jail_term=1000,
+        legitimacy=0.82,
+        max_jail_term=30,
         active_threshold=0.1,
         arrest_prob_constant=2.3,
         movement=True,
@@ -61,6 +61,7 @@ class EpsteinCivilViolence(mesa.Model):
             "active": CitizenState.ACTIVE.name,
             "quiet": CitizenState.QUIET.name,
             "arrested": CitizenState.ARRESTED.name,
+            "tension": "TENSION",          
         }
         agent_reporters = {
             "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
@@ -98,6 +99,7 @@ class EpsteinCivilViolence(mesa.Model):
     def step(self):
         """
         Advance the model by one step and collect data.
+
         """
         self.agents.shuffle_do("step")
         self._update_counts()
@@ -105,6 +107,21 @@ class EpsteinCivilViolence(mesa.Model):
 
         if self.steps > self.max_iters:
             self.running = False
+        """
+        # 1. every citizen decides whether to rebel & then moves
+        self.agents_by_type[Citizen].shuffle_do("step")
+
+        # 2. every cop inspects the *post-decision* landscape and arrests
+        self.agents_by_type[Cop].shuffle_do("step")
+
+        # 3. book-keeping and data collection
+        self._update_counts()
+        self.datacollector.collect(self)
+
+        if self.steps >= self.max_iters:
+            self.running = False
+
+        """
 
     def _update_counts(self):
         """Helper function for counting nr. of citizens in given state."""
@@ -112,3 +129,17 @@ class EpsteinCivilViolence(mesa.Model):
 
         for state in CitizenState:
             setattr(self, state.name, counts.get(state, 0))
+        
+        citizens= self.agents_by_type[Citizen]
+        n=len(citizens)
+        if n:                                     
+            avg_G= sum(a.grievance for a in citizens)/n
+            avg_R=sum(a.risk_aversion for a in citizens)/n
+            prop_quiet= counts.get(CitizenState.QUIET, 0)/n
+            if avg_R != 0:
+                self.TENSION = (avg_G * prop_quiet / avg_R)
+            else:
+                self.TENSION = 0
+
+        else:
+            self.TENSION = 0

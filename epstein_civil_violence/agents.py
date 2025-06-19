@@ -116,9 +116,8 @@ class Citizen(EpsteinAgent):
         # there is a body of literature on this equation
         # the round is not in the pnas paper but without it, its impossible to replicate
         # the dynamics shown there.
-        self.arrest_probability = 1 - math.exp(
-            -1 * self.arrest_prob_constant * round(cops_in_vision / actives_in_vision)
-        )
+        ratio = round(cops_in_vision / actives_in_vision) 
+        self.arrest_probability = 1 - math.exp(-self.arrest_prob_constant * ratio)
 
 
 class Cop(EpsteinAgent):
