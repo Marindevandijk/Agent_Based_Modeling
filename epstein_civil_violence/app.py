@@ -1,9 +1,9 @@
-from mesa.examples.advanced.epstein_civil_violence.agents import (
+from agents import (
     Citizen,
     CitizenState,
     Cop,
 )
-from mesa.examples.advanced.epstein_civil_violence.model import EpsteinCivilViolence
+from model import EpsteinCivilViolence
 from mesa.visualization import (
     Slider,
     SolaraViz,
