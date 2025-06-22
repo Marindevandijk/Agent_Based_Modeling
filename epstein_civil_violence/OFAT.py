@@ -6,8 +6,8 @@ from model import EpsteinCivilViolence
 # Define the parameters and their bounds for OFAT
 problem = {
     'num_vars': 3,
-    'names': ['legitimacy', 'cop_density', 'citizen_density'],
-    'bounds': [[0.6, 0.9], [0.01, 0.1], [0.6, 0.9]]
+    'names': ['legitimacy', 'cop_density' ], #, 'citizen_density'],
+    'bounds': [[0.5, 0.99], [0.01, 0.1]] #] , [0.6, 0.9]]
 }
 
 replicates = 10
@@ -30,11 +30,11 @@ for i, var in enumerate(problem['names']):
             params = {
                 'height': 40,
                 'width': 40,
-                'citizen_density': 0.7,
-                'cop_density': 0.04,
+                'citizen_density': 0.8,
+                'cop_density': 0.074,
                 'citizen_vision': 7,
                 'cop_vision': 7,
-                'legitimacy': 0.75,
+                'legitimacy': 0.8,
                 'max_jail_term': 30,
                 'active_threshold': 0.1,
                 'arrest_prob_constant': 2.3,
