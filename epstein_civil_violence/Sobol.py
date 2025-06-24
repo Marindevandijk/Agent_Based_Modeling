@@ -9,6 +9,7 @@ from itertools import combinations
 from model import EpsteinCivilViolence
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
+from tqdm import tqdm
 
 # Define the parameters and their bounds for Sobol analysis
 problem = {
@@ -33,9 +34,9 @@ problem = {
     ]
 }
 
-replicates = 1  #10
-max_steps = 1  #100
-distinct_samples = 2 #5 #has to be even for Sobol analysis!
+replicates = 10  #10
+max_steps = 100  #100
+distinct_samples = 16 #5 #has to be even for Sobol analysis!
 
 # Generate parameter samples
 param_values = saltelli.sample(problem, distinct_samples)
@@ -65,7 +66,8 @@ if __name__ == "__main__":
     all_args = [(vals, max_steps) for _ in range(replicates) for vals in param_values]
     print(f"Total runs: {len(all_args)}")
     with Pool(processes=cpu_count()) as pool:
-        results = pool.map(run_model, all_args)
+        # tqdm wraps the iterator to show progress
+        results = list(tqdm(pool.imap(run_model, all_args), total=len(all_args)))
 
     columns = problem['names'] + ['Active']
     data = pd.DataFrame(results, columns=columns)
