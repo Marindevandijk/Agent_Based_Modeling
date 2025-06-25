@@ -65,6 +65,7 @@ class EpsteinCivilViolence(mesa.Model):
             "active": CitizenState.ACTIVE.name,
             "quiet": CitizenState.QUIET.name,
             "arrested": CitizenState.ARRESTED.name,
+            "tension": "TENSION"
         }
         agent_reporters = {
             "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
@@ -96,12 +97,12 @@ class EpsteinCivilViolence(mesa.Model):
                 citizen.move_to(cell)
 
         
-        # NETWORK -----------------------
+        # region NETWORK -----------------------
         if networked:
             citizens = [agent for agent in self.agents if isinstance(agent, Citizen)]
             num_citizens = len(citizens)
 
-            nx_graph = nx.barabasi_albert_graph(num_citizens, 10, seed=seed)
+            nx_graph = nx.barabasi_albert_graph(num_citizens, 10, seed=seed) # generation parameter is fixed at 10
 
             self.citizen_network = mesa.space.NetworkGrid(g=nx_graph)
         
@@ -133,3 +134,17 @@ class EpsteinCivilViolence(mesa.Model):
 
         for state in CitizenState:
             setattr(self, state.name, counts.get(state, 0))
+            
+        citizens= self.agents_by_type[Citizen]
+        n=len(citizens)
+        if n:                                     
+            avg_G= sum(a.grievance for a in citizens)/n
+            avg_R=sum(a.risk_aversion for a in citizens)/n
+            prop_quiet= counts.get(CitizenState.QUIET, 0)/n
+            if avg_R != 0:
+                self.TENSION = (avg_G * prop_quiet / avg_R)
+            else:
+                self.TENSION = 0
+
+        else:
+            self.TENSION = 0
