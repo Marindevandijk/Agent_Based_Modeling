@@ -32,6 +32,7 @@ class EpsteinCivilViolence(mesa.Model):
         movement: binary, whether agents try to move at step end
         max_iters: model may not have a natural stopping point, so we set a
             max.
+        networked: whether the social network is added or not
     """
 
     def __init__(

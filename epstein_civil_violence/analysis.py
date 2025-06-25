@@ -14,7 +14,7 @@ model = EpsteinCivilViolence(
     max_jail_term=1000,
     max_iters=1000,
     seed=1,
-    networked=True
+    networked=False
 )  # cap the number of steps the model takes
 model.run_model()
 

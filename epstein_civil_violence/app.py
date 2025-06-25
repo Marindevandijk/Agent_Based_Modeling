@@ -19,7 +19,6 @@ agent_colors = {
     CitizenState.ARRESTED: "#FE0000",
 }
 
-
 def citizen_cop_portrayal(agent):
     if agent is None:
         return
