@@ -2,15 +2,15 @@ from model import EpsteinCivilViolence
 import time
 
 def run_experiment(output_path, networked):
-    # using run 2 settings from PNAS paper
+    # using punctuated equilibrium settings
     model = EpsteinCivilViolence(
         height=40,
         width=40,
-        citizen_density=0.7,
-        cop_density=0.04,
+        citizen_density=0.8,
+        cop_density=0.045,
         citizen_vision=7,
         cop_vision=7,
-        legitimacy=0.82,
+        legitimacy=0.73,
         max_jail_term=30,
         active_threshold=0.1,
         arrest_prob_constant=2.3,

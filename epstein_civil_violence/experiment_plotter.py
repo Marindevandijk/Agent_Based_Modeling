@@ -14,7 +14,7 @@ def plot_experiments(data_file_path, networked=False):
     active = df['active']
     time = range(len(active))
 
-    plt.plot(time, active)
+    plt.plot(time[:1000], active[:1000])
     plt.xlabel('Time', size=12)
     plt.ylabel('Number of active agents', size=12)
     plt.savefig(os.path.join(figures_dir, f'puncEq_net_{networked}.pdf'))
@@ -43,7 +43,8 @@ def plot_experiments(data_file_path, networked=False):
     # region EXPERIMENT 3 -------------------
 
     plt.plot(df.index, df["tension"], label="Tension",  color="blue")
-    plt.plot(df.index, df["active"]/1122,  label="Active agents", color="red")
+    tot_citizens = int(df.iloc[0, :3].sum())
+    plt.plot(df.index, df["active"]/tot_citizens,  label="Active agents", color="red")
     plt.xlabel("Step")
     plt.ylabel("Value")
     plt.legend()
