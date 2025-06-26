@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-
+import numpy as np
 import matplotlib.pyplot as plt
 
 def plot_experiments(data_file_path, networked=False):
@@ -34,7 +34,10 @@ def plot_experiments(data_file_path, networked=False):
             last_end = i
             outburst = False
 
-    plt.hist(waiting_time, bins=50)
+    min_wt, max_wt = min(waiting_time), max(waiting_time)
+    bins = np.arange(min_wt, max_wt + 2) - 0.5  # bin edges centered on integers
+    plt.hist(waiting_time, bins=bins)
+    
     plt.xlabel("Waiting time between outbursts")
     plt.ylabel("Frequency")
     plt.savefig(os.path.join(figures_dir, f'Wait_Time_net_{networked}.pdf'))
@@ -42,9 +45,9 @@ def plot_experiments(data_file_path, networked=False):
 
     # region EXPERIMENT 3 -------------------
 
-    plt.plot(df.index, df["tension"], label="Tension",  color="blue")
+    plt.plot(df.index[:500], df["tension"][:500], label="Tension",  color="blue")
     tot_citizens = int(df.iloc[0, :3].sum())
-    plt.plot(df.index, df["active"]/tot_citizens,  label="Active agents", color="red")
+    plt.plot(df.index[:500], df["active"][:500]/tot_citizens,  label="Active agents", color="red")
     plt.xlabel("Step")
     plt.ylabel("Value")
     plt.legend()
