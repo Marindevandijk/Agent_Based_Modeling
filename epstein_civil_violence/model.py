@@ -67,12 +67,12 @@ class EpsteinCivilViolence(mesa.Model):
             "arrested": CitizenState.ARRESTED.name,
             "tension": "TENSION"
         }
-        agent_reporters = {
-            "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
-            "arrest_probability": lambda a: getattr(a, "arrest_probability", None),
-        }
+        #agent_reporters = {
+        #    "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
+        #    "arrest_probability": lambda a: getattr(a, "arrest_probability", None),
+        #}
         self.datacollector = mesa.DataCollector(
-            model_reporters=model_reporters, agent_reporters=agent_reporters
+            model_reporters=model_reporters
         )
         if cop_density + citizen_density > 1:
             raise ValueError("Cop density + citizen density must be less than 1")

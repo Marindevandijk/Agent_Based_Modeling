@@ -15,7 +15,7 @@ def run_experiment(output_path, networked):
         active_threshold=0.1,
         arrest_prob_constant=2.3,
         movement=True,
-        max_iters=2000,
+        max_iters=10000,
         seed=42,  # Set a seed for reproducibility
         networked=networked
     )
