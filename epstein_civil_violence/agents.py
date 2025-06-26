@@ -17,9 +17,20 @@ class EpsteinAgent(mesa.discrete_space.CellAgent):
         """
         self.neighborhood = self.cell.get_neighborhood(radius=self.vision)
         self.neighbors = self.neighborhood.agents
-        self.empty_neighbors = [c for c in self.neighborhood if c.is_empty]
 
     def move(self):
+        
+        self.neighborhood = self.cell.get_neighborhood(radius=self.vision)
+        self.neighbors = self.neighborhood.agents
+        
+        self.empty_neighbors = []
+        for c in self.neighborhood:
+            if c.is_empty:
+                self.empty_neighbors.append(c)
+            else:
+                if all(getattr(agent, "state", None) == CitizenState.ARRESTED for agent in c.agents):
+                    self.empty_neighbors.append(c)
+                    
         if self.model.movement and self.empty_neighbors:
             new_pos = self.random.choice(self.empty_neighbors)
             self.move_to(new_pos)
@@ -81,7 +92,13 @@ class Citizen(EpsteinAgent):
         self.neighborhood = []
         self.neighbors = []
         self.empty_neighbors = []
-
+        
+        
+    def set_network_neighbors(self, node):
+        # NETWORK --------
+        self.network_neighbors = self.model.citizen_network.get_neighbors(node)
+        # ----------------
+        
     def step(self):
         """
         Decide whether to activate, then move if applicable.
@@ -98,8 +115,6 @@ class Citizen(EpsteinAgent):
         else:
             self.state = CitizenState.QUIET
 
-        self.move()
-
     def update_estimated_arrest_probability(self):
         """
         Based on the ratio of cops to actives in my neighborhood, estimate the
@@ -112,12 +127,19 @@ class Citizen(EpsteinAgent):
                 cops_in_vision += 1
             elif neighbor.state == CitizenState.ACTIVE:
                 actives_in_vision += 1
-
-        # there is a body of literature on this equation
-        # the round is not in the pnas paper but without it, its impossible to replicate
-        # the dynamics shown there.
+        
+        # NETWORK ------------------
+        if self.model.networked:
+            for neighbor in self.network_neighbors:
+                if isinstance(neighbor, Citizen):
+                    if neighbor.state == CitizenState.ACTIVE:
+                        actives_in_vision += 1
+        # ---------------------------
+        
+        
+        # changed to floor instead of round
         self.arrest_probability = 1 - math.exp(
-            -1 * self.arrest_prob_constant * round(cops_in_vision / actives_in_vision)
+            -1 * self.arrest_prob_constant * (cops_in_vision // actives_in_vision)
         )
 
 
@@ -160,5 +182,4 @@ class Cop(EpsteinAgent):
             arrestee = self.random.choice(active_neighbors)
             arrestee.jail_sentence = self.random.randint(0, self.max_jail_term)
             arrestee.state = CitizenState.ARRESTED
-
-        self.move()
+            self.move_to(arrestee.cell)
