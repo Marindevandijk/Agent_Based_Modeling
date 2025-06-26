@@ -7,7 +7,7 @@ def run_experiment(output_path, networked):
         height=40,
         width=40,
         citizen_density=0.7,
-        cop_density=0.06,
+        cop_density=0.05,
         citizen_vision=7,
         cop_vision=7,
         legitimacy=0.82,
@@ -15,8 +15,8 @@ def run_experiment(output_path, networked):
         active_threshold=0.1,
         arrest_prob_constant=2.3,
         movement=True,
-        max_iters=500,
-        seed=42,  # Set a seed for reproducibility
+        max_iters=100000,
+        seed=32,  # Set a seed for reproducibility
         networked=networked
     )
 

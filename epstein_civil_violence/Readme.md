@@ -1,10 +1,27 @@
-# Epstein Civil Violence Model
+# Epstein Civil Violence Model with Social Network Extension
 
 ## Summary
 
-This model is based on Joshua Epstein's simulation of how civil unrest grows and is suppressed. Citizen agents wander the grid randomly, and are endowed with individual risk aversion and hardship levels; there is also a universal regime legitimacy value. There are also Cop agents, who work on behalf of the regime. Cops arrest Citizens who are actively rebelling; Citizens decide whether to rebel based on their hardship and the regime legitimacy, and their perceived probability of arrest.
+This project extends Joshua Epstein’s original model of civil violence by integrating **network structures** to better simulate the influence of **social media and peer communication**. In this networked version, citizen agents are influenced not only by their immediate vision range but also by their connections in a social network. This addition allows us to study how digital communication channels affect the dynamics of protest and suppression.
 
-The model generates mass uprising as self-reinforcing processes: if enough agents are rebelling, the probability of any individual agent being arrested is reduced, making more agents more likely to join the uprising. However, the more rebelling Citizens the Cops arrest, the less likely additional agents become to join.
+## Files
+
+* ``model.py``: Core model code.
+* ``agent.py``: Agent classes.
+* ``app.py``: Sets up the interactive visualization.
+* ``experiment_runner.py``: Use this file to run the model with chosen parameters.
+* ``experiment_plotter.py``: After running `experiment_runner.py`, this file plots the simulation results.
+* ``Sobol.py``: Runs Sobol sensitivity analysis on key model parameters.
+
+## Requirements
+
+To install the required packages:
+
+```bash
+$ pip install -U mesa
+$ pip install -U mesa[rec]
+$ pip install numpy pandas matplotlib tqdm networkx SALib 
+```
 
 ## How to Run
 
@@ -13,13 +30,6 @@ To run the model interactively, in this directory, run the following command
 ```
     $ solara run app.py
 ```
-
-## Files
-
-* ``model.py``: Core model code.
-* ``agent.py``: Agent classes.
-* ``app.py``: Sets up the interactive visualization.
-* ``Epstein Civil Violence.ipynb``: Jupyter notebook conducting some preliminary analysis of the model.
 
 ## Further Reading
 
