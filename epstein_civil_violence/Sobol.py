@@ -83,7 +83,7 @@ def run_model_and_save(args):
 
 if __name__ == "__main__":
     # Prepare CSV file
-    columns = problem['names'] + ['Active']
+    columns = problem['names'] + ['cv']
     csv_dir = os.path.join(os.getcwd(), 'epstein_civil_violence', 'Results')
     os.makedirs(csv_dir, exist_ok=True)
     csv_path = os.path.join(csv_dir, 'sobol_results.csv')
