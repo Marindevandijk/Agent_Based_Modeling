@@ -58,7 +58,7 @@ class EpsteinCivilViolence(mesa.Model):
         self.networked = networked # making it a model var so citizens only conditionally update
 
         self.grid = mesa.discrete_space.OrthogonalVonNeumannGrid(
-            (width, height), capacity=1, torus=True, random=self.random
+            (width, height), capacity=0, torus=True, random=self.random
         )
 
         model_reporters = {

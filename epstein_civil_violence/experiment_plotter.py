@@ -1,46 +1,55 @@
 import pandas as pd
+import os
 
 import matplotlib.pyplot as plt
 
-# region EXPERIMENT 1 ---------------
-df = pd.read_csv('Data/model_output.csv')
-active = df['active']
-time = range(len(active))
+def plot_experiments(data_file_path, networked=False):
 
-plt.plot(time, active)
-plt.title('Punctuated equilibrium', size=14)
-plt.xlabel('Time', size=12)
-plt.ylabel('Figures/Number of active agents', size=12)
-plt.savefig('Figures/punct_equilibrium2.pdf')
-plt.show()
+    # Determine the Figures subdirectory based on 'networked'
+    figures_dir = os.path.join('Figures', 'networked' if networked else 'non_networked')
+    os.makedirs(figures_dir, exist_ok=True)
 
-# region EXPERIMENT 2 ------------------
+    # region EXPERIMENT 1 ---------------
+    df = pd.read_csv(data_file_path)
+    active = df['active']
+    time = range(len(active))
 
-waiting_time = []
-last_end = 0
-outburst = False
-for i, a in enumerate(active):
-    if not outburst and a > 50:
-        if last_end != 0:
-            waiting_time.append(i - last_end)
-        outburst = True
-    if outburst and a <= 50:
-        last_end = i
-        outburst = False
+    plt.plot(time, active)
+    plt.xlabel('Time', size=12)
+    plt.ylabel('Number of active agents', size=12)
+    plt.savefig(os.path.join(figures_dir, f'puncEq_net_{networked}.pdf'))
+    plt.show()
 
-plt.hist(waiting_time, bins=50)
-plt.xlabel("Waiting time between outbursts")
-plt.ylabel("Frequency")
-plt.title("Distribution of Waiting Times")
-plt.savefig('Figures/Waiting time distribution.pdf')
-plt.show()
+    # region EXPERIMENT 2 ------------------
 
-# region EXPERIMENT 3 -------------------
+    waiting_time = []
+    last_end = 0
+    outburst = False
+    for i, a in enumerate(active):
+        if not outburst and a > 50:
+            if last_end != 0:
+                waiting_time.append(i - last_end)
+            outburst = True
+        if outburst and a <= 50:
+            last_end = i
+            outburst = False
 
-plt.plot(df.index, df["tension"], label="Tension",  color="blue")
-plt.plot(df.index, df["active"]/1122,  label="Active agents", color="red")
-plt.xlabel("Step")
-plt.ylabel("Value")
-plt.legend()
-plt.savefig('Figures/Tension vs Actives.pdf')
-plt.show()
+    plt.hist(waiting_time, bins=50)
+    plt.xlabel("Waiting time between outbursts")
+    plt.ylabel("Frequency")
+    plt.savefig(os.path.join(figures_dir, f'Wait_Time_net_{networked}.pdf'))
+    plt.show()
+
+    # region EXPERIMENT 3 -------------------
+
+    plt.plot(df.index, df["tension"], label="Tension",  color="blue")
+    plt.plot(df.index, df["active"]/1122,  label="Active agents", color="red")
+    plt.xlabel("Step")
+    plt.ylabel("Value")
+    plt.legend()
+    plt.savefig(os.path.join(figures_dir, f'tension_net_{networked}.pdf'))
+    plt.show()
+    
+if __name__ == "__main__":
+    plot_experiments("Data/output_networked.csv", networked=True)
+    plot_experiments("Data/output_non_networked.csv", networked=False)
