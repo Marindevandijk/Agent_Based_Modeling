@@ -3,7 +3,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_experiments(data_file_path, networked=False):
+def plot_experiments(data_file_path, networked):
 
     # Determine the Figures subdirectory based on 'networked'
     figures_dir = os.path.join('Figures', 'networked' if networked else 'non_networked')
