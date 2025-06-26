@@ -58,7 +58,7 @@ class EpsteinCivilViolence(mesa.Model):
         self.networked = networked # making it a model var so citizens only conditionally update
 
         self.grid = mesa.discrete_space.OrthogonalVonNeumannGrid(
-            (width, height), capacity=0, torus=True, random=self.random
+            (width, height), capacity=20, torus=True, random=self.random
         )
 
         model_reporters = {
@@ -67,10 +67,7 @@ class EpsteinCivilViolence(mesa.Model):
             "arrested": CitizenState.ARRESTED.name,
             "tension": "TENSION"
         }
-        #agent_reporters = {
-        #    "jail_sentence": lambda a: getattr(a, "jail_sentence", None),
-        #    "arrest_probability": lambda a: getattr(a, "arrest_probability", None),
-        #}
+        
         self.datacollector = mesa.DataCollector(
             model_reporters=model_reporters
         )
@@ -121,6 +118,7 @@ class EpsteinCivilViolence(mesa.Model):
         """
         Advance the model by one step and collect data.
         """
+        self.agents.shuffle_do("move")
         self.agents.shuffle_do("step")
         self._update_counts()
         self.datacollector.collect(self)

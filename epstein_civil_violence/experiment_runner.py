@@ -6,16 +6,16 @@ def run_experiment(output_path, networked):
     model = EpsteinCivilViolence(
         height=40,
         width=40,
-        citizen_density=0.8,
-        cop_density=0.045,
+        citizen_density=0.7,
+        cop_density=0.06,
         citizen_vision=7,
         cop_vision=7,
-        legitimacy=0.73,
+        legitimacy=0.82,
         max_jail_term=30,
         active_threshold=0.1,
         arrest_prob_constant=2.3,
         movement=True,
-        max_iters=200000,
+        max_iters=500,
         seed=42,  # Set a seed for reproducibility
         networked=networked
     )
