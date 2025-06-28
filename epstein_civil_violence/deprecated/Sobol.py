@@ -18,15 +18,13 @@ import gc
 
 # Define the parameters and their bounds for Sobol analysis
 problem = {
-    'num_vars': 4,
+    'num_vars': 3,
     'names': [
-        'citizen_density',
         'cop_density',
         'legitimacy',
         'active_threshold'
     ],
     'bounds': [
-        [0.6, 0.9],      # citizen_density
         [0.01, 0.1],     # cop_density
         [0.5, 0.99],     # legitimacy
         [0.05, 0.2]      # active_threshold
@@ -34,24 +32,25 @@ problem = {
 }
 
 replicates = 10  #10
-max_steps = 150  #100
+max_steps = 100  #100
 distinct_samples = 16 #5 #has to be even for Sobol analysis!
 
 # Generate parameter samples
 param_values = saltelli.sample(problem, distinct_samples)
 
-def run_model_and_save(args):
+def run_model_and_save(index_and_args):
+    index, args = index_and_args
     vals, max_steps, csv_path, lock = args
     params = {
         'height': 40,
         'width': 40,
-        'citizen_density': vals[0],
-        'cop_density': vals[1],
+        'citizen_density': 0.7,
+        'cop_density': vals[0],
         'cop_vision': 7,
         'citizen_vision': 7,
-        'legitimacy': vals[2],
+        'legitimacy': vals[1],
         'max_jail_term': 30,
-        'active_threshold': vals[3],
+        'active_threshold': vals[2],
         'arrest_prob_constant': 2.3,
         'movement': True,
         'max_iters': max_steps,
@@ -65,7 +64,7 @@ def run_model_and_save(args):
     mean_active = np.mean(active_series)
     std_active = np.std(active_series)
     cv = std_active / mean_active if mean_active != 0 else 0
-    row = list(vals) + [cv]
+    row = [index] + list(vals) + [cv]
     
     # Write to CSV with lock to avoid race conditions
     with lock:
@@ -83,7 +82,7 @@ def run_model_and_save(args):
 
 if __name__ == "__main__":
     # Prepare CSV file
-    columns = problem['names'] + ['cv']
+    columns = ['index'] + problem['names'] + ['cv']
     csv_dir = os.path.join(os.getcwd(), 'epstein_civil_violence', 'Results')
     os.makedirs(csv_dir, exist_ok=True)
     csv_path = os.path.join(csv_dir, 'sobol_results.csv')
@@ -96,8 +95,8 @@ if __name__ == "__main__":
     lock = manager.Lock()
     all_args = [(vals, max_steps, csv_path, lock) for _ in range(replicates) for vals in param_values]
     print(f"Total runs: {len(all_args)}")
-    with Pool(processes=cpu_count()) as pool:
-        list(tqdm(pool.imap(run_model_and_save, all_args), total=len(all_args)))
+    with Pool(processes=4) as pool:
+        list(tqdm(pool.imap_unordered(run_model_and_save, [(i, args) for i, args in enumerate(all_args)]), total=len(all_args)))
 
     # Read results from CSV
     data = pd.read_csv(csv_path)
