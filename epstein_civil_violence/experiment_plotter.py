@@ -14,7 +14,7 @@ def plot_experiments(data_file_path, networked):
     active = df['active']
     time = range(len(active))
 
-    plt.plot(time[:1000], active[:1000])
+    plt.plot(time[:500], active[:500])
     plt.xlabel('Time', size=12)
     plt.ylabel('Number of active agents', size=12)
     plt.savefig(os.path.join(figures_dir, f'puncEq_net_{networked}.pdf'))
@@ -40,8 +40,12 @@ def plot_experiments(data_file_path, networked):
     min_wt, max_wt = min(waiting_time), max(waiting_time)
     bin_width = 3
     bins = np.arange(min_wt, max_wt + bin_width, bin_width) - 0.5
+    print('mean',np.mean(waiting_time))
+    print('std',np.std(waiting_time))
+    cv = np.std(waiting_time) / np.mean(waiting_time)
+    print('CV', cv)
     
-    plt.hist(waiting_time, bins=bins)
+    plt.hist(waiting_time, bins=bins,edgecolor="black")
     plt.xlabel("Waiting time between outbursts")
     plt.ylabel("Frequency")
     plt.savefig(os.path.join(figures_dir, f'Wait_Time_net_{networked}.pdf'))
@@ -69,7 +73,7 @@ def plot_experiments(data_file_path, networked):
     mid_x = 0.5 * (min(fit_x) + max(fit_x))
     mid_y = 10 ** (slope * mid_x + intercept+ 0.5)
 
-    plt.hist(waiting_time_trunc, bins=bins,log=True)
+    plt.hist(waiting_time_trunc, bins=bins,log=True,edgecolor="black")
     plt.text(mid_x, mid_y, f"$y = {slope:.2f}x + {intercept:.2f}$", fontsize=10, color='red')
     plt.plot(fit_x, fit_y, linestyle='dotted', color='red', label=f"Slope ≈ {slope:.2f}")
     plt.xlabel("Waiting time between outbursts")
@@ -87,8 +91,10 @@ def plot_experiments(data_file_path, networked):
     plt.legend()
     plt.savefig(os.path.join(figures_dir, f'tension_net_{networked}.pdf'))
     plt.show()
+
     
 if __name__ == "__main__":
     plot_experiments("Data/output_networked.csv", networked=True)
     plot_experiments("Data/output_non_networked.csv", networked=False)
 
+    
