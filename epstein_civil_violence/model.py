@@ -50,7 +50,8 @@ class EpsteinCivilViolence(mesa.Model):
         movement=True,
         max_iters=1000,
         seed=None,
-        networked=True
+        networked=True,
+        m=10
     ):
         super().__init__(seed=seed)
         self.movement = movement
@@ -99,7 +100,7 @@ class EpsteinCivilViolence(mesa.Model):
             citizens = [agent for agent in self.agents if isinstance(agent, Citizen)]
             num_citizens = len(citizens)
 
-            nx_graph = nx.barabasi_albert_graph(num_citizens, 10, seed=seed) # generation parameter is fixed at 10
+            nx_graph = nx.barabasi_albert_graph(num_citizens, m, seed=seed) # generation parameter is fixed at 10
 
             self.citizen_network = mesa.space.NetworkGrid(g=nx_graph)
         

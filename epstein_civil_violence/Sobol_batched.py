@@ -33,7 +33,7 @@ replicates = 10
 max_steps = 100
 distinct_samples = 32
 batch_size = 100 # 1000
-output_file = "./batched_sobol_results_waittime30.csv"
+output_file = "./batched_sobol_results_m2.csv"
 
 param_values = saltelli.sample(problem, distinct_samples)
 all_args = [((i, args), max_steps) for i, args in enumerate([(vals, max_steps) for _ in range(replicates) for vals in param_values])]
@@ -54,6 +54,7 @@ def run_model(index_args):
         'movement': True,
         'max_iters': max_steps,
         'networked': True,
+        'm': 2
     }
     model = EpsteinCivilViolence(**params)
     model.run_model()
