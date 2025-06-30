@@ -20,7 +20,7 @@ This repository implements the Epstein Civil Violence model in Python using the 
 ```
 .
 ├── Data/
-│   ├── batched_sobol_results_m10.csv (example)
+│   ├── batched_sobol_results.csv (example)
 │   ├── batched_sobol_results_m2.csv (example)
 │   ├── output_networked.csv (example)
 │   └── output_non_networked.csv (example)
@@ -55,8 +55,13 @@ pip install -r requirements.txt
 
 ### 2. Run Experiments
 
-To run the main experiments and generate output data:
+To run the main experiments and generate output data (circa 2 mins):
 
+```bash
+python experiments.py --generate
+```
+
+If you wish to simply view previous results:
 ```bash
 python experiments.py
 ```
@@ -67,9 +72,17 @@ To edit the model parameters, see run_experiment() in experiments.py
 
 ### 3. Run Sobol Sensitivity Analysis
 
-NOTE: with current settings this takes circa 3 hours
-To perform a sobol sensitivity analysis: 
 
+To perform a sobol sensitivity analysis using previous data: 
+
+```bash
+python sobol.py --no_run
+```
+
+
+
+If you wish to generate your own data first:  
+NOTE: with current settings this takes circa 3 hours
 ```bash
 python sobol.py
 ```

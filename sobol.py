@@ -16,6 +16,7 @@ import os
 import numpy as np
 import pandas as pd
 from SALib.analyze import sobol
+import sys
 import matplotlib.pyplot as plt
 
 def analyze_and_plot_sobol(problem, csv_path):
@@ -51,7 +52,7 @@ def analyze_and_plot_sobol(problem, csv_path):
 
     for order, ylabel in orders:
         _, ax = plt.subplots(figsize=(7, 6))
-        for i, (label, color) in enumerate(zip(['10', '2'], ['#1f77b4', '#ff7f0e'])):
+        for i, (label, color) in enumerate(zip(['model 1'], ['#1f77b4', '#ff7f0e'])):
             Si = results[label]
             ax.bar(x + i*width, Si[order], width, yerr=Si[f'{order}_conf'], label=f'm={label}', color=color, capsize=5, edgecolor='black')
         ax.set_ylabel(ylabel, fontsize=14)
@@ -135,6 +136,14 @@ if __name__ == "__main__":
             [0.05, 0.5],
         ]
     }
+    
+    output_file = "Data/batched_sobol_results.csv"
+    
+    if "--no_run" in sys.argv:
+        analyze_and_plot_sobol(problem, output_file)
+        exit(0)
+    
+    
 
     ''' # used for report 
             [0.4, 0.8],
@@ -146,7 +155,7 @@ if __name__ == "__main__":
     max_steps = 100
     distinct_samples = 32
     batch_size = 100
-    output_file = "Data/batched_sobol_results.csv"
+    
 
     param_values = saltelli.sample(problem, distinct_samples)
     # add an index to each parameter combination for tracking purposes

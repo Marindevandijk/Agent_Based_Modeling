@@ -7,6 +7,7 @@ import time
 import pandas as pd
 import os
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
 
 
@@ -43,6 +44,7 @@ def run_experiment(output_path, networked):
     end_time = time.time()
     print(f"Model run time: {end_time - start_time:.2f} seconds")
     print(f"{(end_time - start_time )/model.max_iters:.2f} sec per iteration")
+    print('Networked? :', networked)
 
     model_out = model.datacollector.get_model_vars_dataframe()
     model_out.to_csv(output_path, index=False)
@@ -110,8 +112,9 @@ def plot_experiments(data_file_path, networked):
 
 if __name__ == "__main__":
     # uncomment to generate own data
-    #run_experiment("Data/output_networked.csv", networked=True)
-    #run_experiment("Data/output_non_networked.csv", networked=False)
+    if "--generate" in sys.argv:
+        run_experiment("Data/output_networked.csv", networked=True)
+        run_experiment("Data/output_non_networked.csv", networked=False)
     
     plot_experiments("Data/output_networked.csv", networked=True)
     plot_experiments("Data/output_non_networked.csv", networked=False)
